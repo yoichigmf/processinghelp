@@ -226,6 +226,8 @@ class ProcessingHelp:
             # connect to provide cleanup on closing of dockwidget
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
 
+
+            self.dockwidget.dockWidgetContents.helpText.setPlainText('Hellow PySide!!')
             # show the dockwidget
             # TODO: fix to allow choice of dock location
             self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
