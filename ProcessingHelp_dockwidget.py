@@ -43,6 +43,11 @@ class ProcessingHelpDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # self.<objectname>, and you can use autoconnect slots - see
         # http://doc.qt.io/qt-5/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
+        
+        
+        self.HelpText = self.findChild(QtWidgets.QTextEdit, 'helpText') # Find help text
+        
+        self.ProcessList = self.findChild(QtWidgets.QListWidget, 'listWidget') # Find help text
         self.setupUi(self)
 
     def closeEvent(self, event):

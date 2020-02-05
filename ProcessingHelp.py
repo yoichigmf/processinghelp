@@ -24,12 +24,17 @@
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt import QtGui, QtWidgets
 # Initialize Qt resources from file resources.py
 from .resources import *
 
 # Import the code for the DockWidget
 from .ProcessingHelp_dockwidget import ProcessingHelpDockWidget
 import os.path
+
+from qgis.analysis import QgsNativeAlgorithms
+import processing
+
 
 
 class ProcessingHelp:
@@ -227,7 +232,24 @@ class ProcessingHelp:
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
 
 
-            self.dockwidget.dockWidgetContents.helpText.setPlainText('Hellow PySide!!')
+            if self.dockwidget.HelpText == None:
+                self.dockwidget.HelpText = self.dockwidget.findChild(QtWidgets.QTextEdit, 'helpText') 
+ 
+ 
+            if self.dockwidget.ProcessList == None:
+                self.dockwidget.ProcessList = self.dockwidget.findChild(QtWidgets.QListWidget, 'listWidget')                
+                
+            
+            self.dockwidget.HelpText.setPlainText('Hellow PySide!!')
+            
+            #  登録済アルゴリズムのリスト表示  デバッグ
+            #for alg in QgsApplication.processingRegistry().algorithms():
+            #     self.dockwidget.ProcessList.addItem(QtGui.QListWidgetItem(alg.displayName()))
+            #    print(alg.id(), "->", alg.displayName())
+            
+            #self.dockwidget.ProcessList.addItem(QListWidgetItem('item 1'))
+
+            
             # show the dockwidget
             # TODO: fix to allow choice of dock location
             self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
