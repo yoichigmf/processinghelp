@@ -23,9 +23,10 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtWidgets import (QAction, QApplication, QMainWindow, QListWidget, QVBoxLayout, QWidget)
 from qgis.PyQt import QtGui, QtWidgets
 # Initialize Qt resources from file resources.py
+from qgis.core import *
 from .resources import *
 
 # Import the code for the DockWidget
@@ -213,6 +214,23 @@ class ProcessingHelp:
 
     #--------------------------------------------------------------------------
 
+    #  リストがクリックされた場合の関数
+    def selectionChanged(self):
+    
+            tgtext = self.dockwidget.ProcessList.selectedItems()
+            
+            crow = self.dockwidget.ProcessList.currentRow() 
+            calg =  QgsApplication.processingRegistry().algorithms()[crow]
+            
+            
+            tgstr = calg.provider().name() + ":" + calg.name()
+            
+            helptext = processing.algorithmHelp( tgstr )
+            QgsMessageLog.logMessage(tgstr, 'processinghelp', level=Qgis.Info)
+            
+            QgsMessageLog.logMessage(helptext, 'processinghelp', level=Qgis.Info)
+            self.dockwidget.HelpText.setPlainText( helptext )
+    
     def run(self):
         """Run method that loads and starts the plugin"""
 
@@ -240,14 +258,17 @@ class ProcessingHelp:
                 self.dockwidget.ProcessList = self.dockwidget.findChild(QtWidgets.QListWidget, 'listWidget')                
                 
             
+            #  List がクリックされた場合の飛び先関数の指定
+            self.dockwidget.ProcessList.itemSelectionChanged.connect(self.selectionChanged)
+            
             self.dockwidget.HelpText.setPlainText('Hellow PySide!!')
             
-            #  �o�^�σA���S���Y���̃��X�g�\��  �f�o�b�O
-            #for alg in QgsApplication.processingRegistry().algorithms():
-            #     self.dockwidget.ProcessList.addItem(QtGui.QListWidgetItem(alg.displayName()))
+            #  登録済アルゴリズムのリスト表示  デバッグ
+            for alg in QgsApplication.processingRegistry().algorithms():
+                 self.dockwidget.ProcessList.addItem(alg.displayName())
             #    print(alg.id(), "->", alg.displayName())
             
-            #self.dockwidget.ProcessList.addItem(QListWidgetItem('item 1'))
+            #self.dockwidget.ProcessList.addItem('item 1')
 
             
             # show the dockwidget
