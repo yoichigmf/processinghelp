@@ -214,6 +214,8 @@ class ProcessingHelp:
 
     #--------------------------------------------------------------------------
 
+          
+          
     #  リストがクリックされた場合の関数
     def selectionChanged(self):
     
@@ -223,13 +225,75 @@ class ProcessingHelp:
             calg =  QgsApplication.processingRegistry().algorithms()[crow]
             
             
-            tgstr = calg.provider().name() + ":" + calg.name()
+            #tgstr = calg.provider().name().lower() + ":" + calg.name()
             
-            helptext = processing.algorithmHelp( tgstr )
-            QgsMessageLog.logMessage(tgstr, 'processinghelp', level=Qgis.Info)
+            #helptext = processing.algorithmHelp( tgstr )
             
-            QgsMessageLog.logMessage(helptext, 'processinghelp', level=Qgis.Info)
-            self.dockwidget.HelpText.setPlainText( helptext )
+            #alg = QgsApplication.processingRegistry().algorithmById(tgstr)
+          
+            if calg is not None:
+                hstr = '{} ({})\n'.format(calg.displayName(), calg.id())
+                
+                if calg.shortDescription():
+                       hstr = hstr + calg.shortDescription() + '\n'
+                       
+                       
+                if calg.shortHelpString():
+                       hstr = hstr + calg.shortHelpString() + '\n'
+            
+    
+    
+                hstr += '\n----'
+                hstr += 'Input parameters'
+                hstr += '------'
+        
+        
+                for p in calg.parameterDefinitions():
+                    hstr += '\n{}: {}'.format(p.name(), p.description())
+
+                    hstr += '\n\tParameter type:\t{}'.format(p.__class__.__name__)
+
+                if isinstance(p, QgsProcessingParameterEnum):
+                    opts = []
+                    for i, o in enumerate(p.options()):
+                          opts.append('\t\t- {}: {}'.format(i, o))
+                          hstr +='\n\tAvailable values:\n{}'.format('\n'.join(opts))
+
+                parameter_type = QgsApplication.processingRegistry().parameterType(p.type())
+                accepted_types = parameter_type.acceptedPythonTypes() if parameter_type is not None else []
+                if accepted_types:
+                    opts = []
+                    for t in accepted_types:
+                         opts.append('\t\t- {}'.format(t))
+                    hstr += '\n\tAccepted data types:'
+                    hstr += '\n'.join(opts)
+        
+        
+                hstr += '\n----'
+                hstr +='Outputs'
+                hstr += '----'
+
+                for o in calg.outputDefinitions():
+                    hstr += '\n{}:  <{}>'.format(o.name(), o.__class__.__name__)
+                    if o.description():
+                         hstr += '\t' + o.description()
+        
+        
+        
+            else:
+                hstr = 'not found \n'  
+            
+            #QgsMessageLog.logMessage(tgstr, 'processinghelp', level=Qgis.Info)
+            
+            #QgsMessageLog.logMessage(helptext, 'processinghelp', level=Qgis.Info)
+            
+            if self.dockwidget.HelpText == None:
+                self.dockwidget.HelpText = self.dockwidget.findChild(QtWidgets.QTextEdit, 'helpText') 
+                
+            self.dockwidget.HelpText.setPlainText( hstr )
+    
+
+          
     
     def run(self):
         """Run method that loads and starts the plugin"""
@@ -261,7 +325,7 @@ class ProcessingHelp:
             #  List がクリックされた場合の飛び先関数の指定
             self.dockwidget.ProcessList.itemSelectionChanged.connect(self.selectionChanged)
             
-            self.dockwidget.HelpText.setPlainText('Hellow PySide!!')
+            self.dockwidget.HelpText.setPlainText("Hellow PySide!! \n\nsample text ")
             
             #  登録済アルゴリズムのリスト表示  デバッグ
             for alg in QgsApplication.processingRegistry().algorithms():
