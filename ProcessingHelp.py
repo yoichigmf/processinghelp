@@ -25,6 +25,9 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import (QAction, QApplication, QMainWindow, QListWidget, QVBoxLayout, QWidget)
 from qgis.PyQt import QtGui, QtWidgets
+
+
+
 # Initialize Qt resources from file resources.py
 from qgis.core import *
 from .resources import *
@@ -35,8 +38,8 @@ import os.path
 
 from qgis.analysis import QgsNativeAlgorithms
 import processing
-
-
+from processing.gui.ProcessingToolbox import ProcessingToolbox
+from qgis.gui  import QgsProcessingToolboxTreeView
 
 class ProcessingHelp:
     """QGIS Plugin Implementation."""
@@ -288,7 +291,7 @@ class ProcessingHelp:
             #QgsMessageLog.logMessage(helptext, 'processinghelp', level=Qgis.Info)
             
             if self.dockwidget.HelpText == None:
-                self.dockwidget.HelpText = self.dockwidget.findChild(QtWidgets.QTextEdit, 'helpText') 
+                self.dockwidget.HelpText = self.dockwidget.findChild(QtWidgets.QTextEdit, 'textEdit') 
                 
             self.dockwidget.HelpText.setPlainText( hstr )
     
@@ -315,21 +318,21 @@ class ProcessingHelp:
 
 
             if self.dockwidget.HelpText == None:
-                self.dockwidget.HelpText = self.dockwidget.findChild(QtWidgets.QTextEdit, 'helpText') 
+                self.dockwidget.HelpText = self.dockwidget.findChild(QtWidgets.QTextEdit, 'textEdit') 
  
  
             if self.dockwidget.ProcessList == None:
-                self.dockwidget.ProcessList = self.dockwidget.findChild(QtWidgets.QListWidget, 'listWidget')                
+                self.dockwidget.ProcessList = self.dockwidget.findChild(QgsProcessingToolboxTreeView, 'algorithmTree')                
                 
             
             #  List がクリックされた場合の飛び先関数の指定
-            self.dockwidget.ProcessList.itemSelectionChanged.connect(self.selectionChanged)
+            #self.dockwidget.ProcessList.selectionChanged.connect(self.selectionChanged)
             
-            self.dockwidget.HelpText.setPlainText("Hellow PySide!! \n\nsample text ")
+            #self.dockwidget.HelpText.setPlainText("Hellow PySide!! \n\nsample text ")
             
             #  登録済アルゴリズムのリスト表示  デバッグ
-            for alg in QgsApplication.processingRegistry().algorithms():
-                 self.dockwidget.ProcessList.addItem(alg.displayName())
+            #for alg in QgsApplication.processingRegistry().algorithms():
+            #     self.dockwidget.ProcessList.addItem(alg.displayName())
             #    print(alg.id(), "->", alg.displayName())
             
             #self.dockwidget.ProcessList.addItem('item 1')
